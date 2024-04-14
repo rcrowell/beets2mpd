@@ -18,16 +18,14 @@ TAGCACHE_FILEPATH = '/nas/beets/mpd/tag_cache'
 # MPD.
 MPD_DB_FORMAT = 2
 MPD_VERSION = '0.23.12'
+MPD_SEMVER = semver.Version.parse(MPD_VERSION, optional_minor_and_patch=True)
 
 # Delimiter used for multi-valued genres in Beets's `genre` field.
 GENRE_DELIMITER = ', '
 
-def to_semver(s):
-    return semver.Version.parse(s, optional_minor_and_patch=True)
-
 # Use the best set of tags supported by mpd version.
-TAGSINFO_MAP = {
-    '0': '''tag: Artist
+MPD_TAGSINFO_MAP = {
+    semver.Version(0, 0, 0): '''tag: Artist
 tag: ArtistSort
 tag: Album
 tag: AlbumSort
@@ -58,7 +56,7 @@ tag: MUSICBRAINZ_ALBUMARTISTID
 tag: MUSICBRAINZ_TRACKID
 tag: MUSICBRAINZ_RELEASETRACKID
 tag: MUSICBRAINZ_WORKID''',
-    '0.24': '''tag: Artist
+    semver.Version(0, 24, 0): '''tag: Artist
 tag: ArtistSort
 tag: Album
 tag: AlbumSort
@@ -89,12 +87,8 @@ tag: MUSICBRAINZ_TRACKID
 tag: MUSICBRAINZ_RELEASETRACKID
 tag: MUSICBRAINZ_WORKID''',
 }
-_mpd_tagsinfo_versions = sorted(
-    [x for x in TAGSINFO_MAP.keys() if to_semver(x) <= to_semver(MPD_VERSION)],
-    key=to_semver,
-)
-MPD_TAGSINFO_VERSION = _mpd_tagsinfo_versions[-1]
-TAGSINFO_TEXT = TAGSINFO_MAP[MPD_TAGSINFO_VERSION]
+MPD_TAGSINFO_SEMVER = sorted([x for x in MPD_TAGSINFO_MAP.keys() if x <= MPD_SEMVER])[-1]
+MPD_TAGSINFO = MPD_TAGSINFO_MAP[MPD_TAGSINFO_SEMVER]
 
 ### Main.
 
@@ -172,7 +166,7 @@ info_begin
 format: {MPD_DB_FORMAT}
 mpd_version: {MPD_VERSION}
 fs_charset: {fs_charset}
-
+{MPD_TAGSINFO}
 info_end
 ''')
 
