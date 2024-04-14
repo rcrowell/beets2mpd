@@ -3,6 +3,7 @@
 import gzip
 import sqlite3
 import os
+import semver
 import sys
 import time
 import tempfile
@@ -20,6 +21,80 @@ MPD_VERSION = '0.23.12'
 
 # Delimiter used for multi-valued genres in Beets's `genre` field.
 GENRE_DELIMITER = ', '
+
+def to_semver(s):
+    return semver.Version.parse(s, optional_minor_and_patch=True)
+
+# Use the best set of tags supported by mpd version.
+TAGSINFO_MAP = {
+    '0': '''tag: Artist
+tag: ArtistSort
+tag: Album
+tag: AlbumSort
+tag: AlbumArtist
+tag: AlbumArtistSort
+tag: Title
+tag: Track
+tag: Name
+tag: Genre
+tag: Date
+tag: OriginalDate
+tag: Composer
+tag: ComposerSort
+tag: Performer
+tag: Conductor
+tag: Work
+tag: Ensemble
+tag: Movement
+tag: MovementNumber
+tag: Location
+tag: Grouping
+tag: Comment
+tag: Disc
+tag: Label
+tag: MUSICBRAINZ_ARTISTID
+tag: MUSICBRAINZ_ALBUMID
+tag: MUSICBRAINZ_ALBUMARTISTID
+tag: MUSICBRAINZ_TRACKID
+tag: MUSICBRAINZ_RELEASETRACKID
+tag: MUSICBRAINZ_WORKID''',
+    '0.24': '''tag: Artist
+tag: ArtistSort
+tag: Album
+tag: AlbumSort
+tag: AlbumArtist
+tag: AlbumArtistSort
+tag: Title
+tag: TitleSort
+tag: Track
+tag: Genre
+tag: Date
+tag: OriginalDate
+tag: Composer
+tag: ComposerSort
+tag: Performer
+tag: Conductor
+tag: Work
+tag: Movement
+tag: MovementNumber
+tag: Ensemble
+tag: Location
+tag: Grouping
+tag: Disc
+tag: Label
+tag: MUSICBRAINZ_ARTISTID
+tag: MUSICBRAINZ_ALBUMID
+tag: MUSICBRAINZ_ALBUMARTISTID
+tag: MUSICBRAINZ_TRACKID
+tag: MUSICBRAINZ_RELEASETRACKID
+tag: MUSICBRAINZ_WORKID''',
+}
+_mpd_tagsinfo_versions = sorted(
+    [x for x in TAGSINFO_MAP.keys() if to_semver(x) <= to_semver(MPD_VERSION)],
+    key=to_semver,
+)
+MPD_TAGSINFO_VERSION = _mpd_tagsinfo_versions[-1]
+TAGSINFO_TEXT = TAGSINFO_MAP[MPD_TAGSINFO_VERSION]
 
 ### Main.
 
@@ -97,37 +172,7 @@ info_begin
 format: {MPD_DB_FORMAT}
 mpd_version: {MPD_VERSION}
 fs_charset: {fs_charset}
-tag: Artist
-tag: ArtistSort
-tag: Album
-tag: AlbumSort
-tag: AlbumArtist
-tag: AlbumArtistSort
-tag: Title
-tag: Track
-tag: Name
-tag: Genre
-tag: Date
-tag: OriginalDate
-tag: Composer
-tag: ComposerSort
-tag: Performer
-tag: Conductor
-tag: Work
-tag: Ensemble
-tag: Movement
-tag: MovementNumber
-tag: Location
-tag: Grouping
-tag: Comment
-tag: Disc
-tag: Label
-tag: MUSICBRAINZ_ARTISTID
-tag: MUSICBRAINZ_ALBUMID
-tag: MUSICBRAINZ_ALBUMARTISTID
-tag: MUSICBRAINZ_TRACKID
-tag: MUSICBRAINZ_RELEASETRACKID
-tag: MUSICBRAINZ_WORKID
+
 info_end
 ''')
 
