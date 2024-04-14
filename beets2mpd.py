@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import gzip
 import sqlite3
 import os
 import sys
@@ -9,13 +10,13 @@ import tempfile
 ### Config.
 
 # Paths.
-MUSIC_ROOT_DIR = '/media/droppie/libraries/music'
-BEETS_DB_FILEPATH = '/media/droppie/libraries/music/.meta/beets/library.db'
-TAGCACHE_FILEPATH = '/media/droppie/libraries/music/.meta/mpd/tag_cache'
+MUSIC_ROOT_DIR = '/nas/beets/artists'
+BEETS_DB_FILEPATH = '/nas/beets/beets/library.db'
+TAGCACHE_FILEPATH = '/nas/beets/mpd/tag_cache'
 
 # MPD.
 MPD_DB_FORMAT = 2
-MPD_VERSION = '0.24'
+MPD_VERSION = '0.23.12'
 
 # Delimiter used for multi-valued genres in Beets's `genre` field.
 GENRE_DELIMITER = ', '
@@ -103,8 +104,8 @@ tag: AlbumSort
 tag: AlbumArtist
 tag: AlbumArtistSort
 tag: Title
-tag: TitleSort
 tag: Track
+tag: Name
 tag: Genre
 tag: Date
 tag: OriginalDate
@@ -113,11 +114,12 @@ tag: ComposerSort
 tag: Performer
 tag: Conductor
 tag: Work
+tag: Ensemble
 tag: Movement
 tag: MovementNumber
-tag: Ensemble
 tag: Location
 tag: Grouping
+tag: Comment
 tag: Disc
 tag: Label
 tag: MUSICBRAINZ_ARTISTID
@@ -253,11 +255,11 @@ end: {os.sep.join(path_cursor[from_start_to_i])}
     # Sync tagcache to disk
     print("Writing MPD tag cache file...", end='')
     sys.stdout.flush()
-    with open(TAGCACHE_FILEPATH, "w") as out:
+    with gzip.open(TAGCACHE_FILEPATH, "wt") as out:
         tagcache.seek(0)
         out.write(tagcache.read())
     print(" OK.")
-
+    
     # Cleanup.
     print("Cleaning up...", end='')
     sys.stdout.flush()
