@@ -150,7 +150,7 @@ if __name__ == '__main__':
         left join albums
         on items.album_id = albums.id
 
-        order by items.path, items.track
+        order by cast(items.path as text), items.track
     ''')
     print(" OK.")
 
