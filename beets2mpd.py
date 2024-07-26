@@ -125,6 +125,7 @@ if __name__ == '__main__':
             items.artist,
             items.artist_sort,
             items.album,
+            items.album_id,
             albums.albumartist,
             albums.albumartist_sort,
             items.title,
@@ -180,6 +181,7 @@ info_end
          artist,
          artist_sort,
          album,
+         album_id,
          albumartist,
          albumartist_sort,
          title,
@@ -272,6 +274,7 @@ Composer: {composer}
 ComposerSort: {composer_sort}
 Work: {work}
 Grouping: {grouping}
+Location: beet:album_id:{album_id}
 MUSICBRAINZ_ARTISTID: {mb_artistid}
 MUSICBRAINZ_ALBUMID: {mb_albumid}
 MUSICBRAINZ_ALBUMARTISTID: {mb_albumartistid}
@@ -297,7 +300,7 @@ end: {os.sep.join(path_cursor[from_start_to_i])}
     with gzip.open(TAGCACHE_FILEPATH, "wt") as out:
         tagcache.seek(0)
         out.write(tagcache.read())
-    print(" OK.")
+    print(" OK.", TAGCACHE_FILEPATH)
     
     # Cleanup.
     print("Cleaning up...", end='')
