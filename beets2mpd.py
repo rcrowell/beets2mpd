@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import gzip
+import json
 import sqlite3
 import os
 import semver
@@ -261,20 +262,21 @@ AlbumArtistSort: {albumartist_sort}
 Artist: {artist}
 ArtistSort: {artist_sort}
 Title: {title}
-Label: {label}
 Track: {track}
 ''')
+        if label:
+            tagcache.write(f'Label: {label}' + os.linesep)
+        
         for genre_value in genres:
             tagcache.write(f'Genre: {genre_value}' + os.linesep)
         tagcache.write(f'''\
-Date: {year}
+Date: {year or original_year}
 OriginalDate: {original_year}
 Disc: {disc}
 Composer: {composer}
 ComposerSort: {composer_sort}
 Work: {work}
 Grouping: {grouping}
-Location: beet:album_id:{album_id}
 MUSICBRAINZ_ARTISTID: {mb_artistid}
 MUSICBRAINZ_ALBUMID: {mb_albumid}
 MUSICBRAINZ_ALBUMARTISTID: {mb_albumartistid}
