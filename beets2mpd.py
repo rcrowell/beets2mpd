@@ -127,8 +127,10 @@ if __name__ == '__main__':
             items.artist_sort,
             items.album,
             items.album_id,
+            albums.albumtype,
             albums.albumartist,
             albums.albumartist_sort,
+            items.media,
             items.title,
             items.track,
             albums.genre,
@@ -183,8 +185,10 @@ info_end
          artist_sort,
          album,
          album_id,
+         album_type,
          albumartist,
          albumartist_sort,
+         media,
          title,
          track,
          genre,
@@ -266,7 +270,14 @@ Track: {track}
 ''')
         if label:
             tagcache.write(f'Label: {label}' + os.linesep)
-        
+
+        extra_js = {
+            'album_type': album_type,
+            'media': media,
+        }
+        if extra_js:
+            tagcache.write(f'Comment: {json.dumps(extra_js)}' + os.linesep)
+            
         for genre_value in genres:
             tagcache.write(f'Genre: {genre_value}' + os.linesep)
         tagcache.write(f'''\
@@ -285,7 +296,7 @@ MUSICBRAINZ_RELEASETRACKID: {mb_releaseid}
 MUSICBRAINZ_WORKID: {mb_workid}
 mtime: {item_added}
 song_end
-''')
+''')        
 
     # Close final directories.
     for i, _ in enumerate(path_cursor[::-1]):
